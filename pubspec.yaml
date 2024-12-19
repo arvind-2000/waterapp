@@ -38,7 +38,13 @@ dependencies:
   get: ^4.6.6
   flutter_blue_classic: ^0.0.3
   bluetooth_classic: ^0.0.2
+  flutter_bluetooth_serial:
+     git:
+      url: https://github.com/arvind-2000/flutter_bluetooth_serial.git
+      ref: 6ceb9cc6db7165633e8947b63ba6b9202e77482e
+
   permission_handler: ^11.3.1
+  scoped_model: ^2.0.0
 
 dev_dependencies:
   flutter_test:
