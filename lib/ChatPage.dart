@@ -7,6 +7,7 @@ import 'package:flutter_bluetooth_serial/flutter_bluetooth_serial.dart';
 import 'package:lottie/lottie.dart';
 import 'package:waterapp/widgets/roundcard.dart';
 
+
 class ChatPage extends StatefulWidget {
   final BluetoothDevice server;
 

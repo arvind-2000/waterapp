@@ -165,28 +165,28 @@ class _SettingsPageState extends State<SettingsPage> {
                         }
                       }),
                 ),
-                ListTile(
-                  title: ElevatedButton(
-                    child: const Text('Connect to paired device to chat'),
-                    onPressed: () async {
-                      final BluetoothDevice? selectedDevice =
-                          await Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (context) {
-                            return const SelectBondedDevicePage(checkAvailability: false);
-                          },
-                        ),
-                      );
+                // ListTile(
+                //   title: ElevatedButton(
+                //     child: const Text('Connect to paired device to chat'),
+                //     onPressed: () async {
+                //       final BluetoothDevice? selectedDevice =
+                //           await Navigator.of(context).push(
+                //         MaterialPageRoute(
+                //           builder: (context) {
+                //             return const SelectBondedDevicePage(checkAvailability: false);
+                //           },
+                //         ),
+                //       );
         
-                      // if (selectedDevice != null) {
-                      //   print('Connect -> selected ' + selectedDevice.address);
-                      //   widget.startChat(selectedDevice);
-                      // } else {
-                      //   print('Connect -> no device selected');
-                      // }
-                    },
-                  ),
-                ),
+                //       // if (selectedDevice != null) {
+                //       //   print('Connect -> selected ' + selectedDevice.address);
+                //       //   widget.startChat(selectedDevice);
+                //       // } else {
+                //       //   print('Connect -> no device selected');
+                //       // }
+                //     },
+                //   ),
+                // ),
                 // const Divider(),
                 // const ListTile(title: Text('Multiple connections example')),
                 // ListTile(

@@ -3,26 +3,32 @@ import 'package:flutter/material.dart';
 final ThemeData darkTheme = ThemeData(
   brightness: Brightness.dark,
   
-  appBarTheme: AppBarTheme(
-    backgroundColor:  Colors.blueGrey[900]!,
+  appBarTheme: const AppBarTheme(
+    backgroundColor:  Colors.white,
+    foregroundColor: Colors.white,
     elevation: 0,
     toolbarHeight: 80,   
-    iconTheme: const IconThemeData(color: Colors.blue),
+    iconTheme: IconThemeData(color: Colors.blue),
   ),
-  colorScheme: ColorScheme.dark(
-    primary: Colors.blueGrey[900]!,
-    secondary: const Color.fromARGB(255, 8, 112, 197),
+  scaffoldBackgroundColor: Colors.white,
+  colorScheme: ColorScheme(
+    error: Colors.red,
+    onError: Colors.white,
+  brightness: Brightness.dark,
+    primary: Colors.grey[100]!,
+    secondary: const Color.fromARGB(255, 2, 44, 105),
     onPrimary: Colors.white,
     onSecondary: Colors.white,
     
     surface: Colors.grey[850]!,
-    onSurface: Colors.white,
+    onSurface: Colors.grey[900]!,
   ),
   textTheme: TextTheme(
-    headlineLarge : const TextStyle(color: Colors.white, fontSize: 32, fontWeight: FontWeight.bold),
+  
+    headlineLarge :TextStyle(color: Colors.grey[900]!, fontSize: 32, fontWeight: FontWeight.bold),
     headlineMedium
-    : const TextStyle(color: Colors.white, fontSize: 24, fontWeight: FontWeight.bold),
-    bodyLarge: const TextStyle(color: Colors.white, fontSize: 16),
+    :  TextStyle(color:Colors.grey[900]!, fontSize: 24, fontWeight: FontWeight.bold),
+    bodyLarge:  TextStyle(color: Colors.grey[900]!, fontSize: 16),
     bodyMedium: TextStyle(color: Colors.grey[400], fontSize: 14),
   ),
   buttonTheme: const ButtonThemeData(

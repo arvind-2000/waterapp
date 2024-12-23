@@ -10,8 +10,8 @@ class SelectBondedDevicePage extends StatefulWidget {
   /// If true, on page start there is performed discovery upon the bonded devices.
   /// Then, if they are not avaliable, they would be disabled from the selection.
   final bool checkAvailability;
-
-  const SelectBondedDevicePage({this.checkAvailability = true});
+  final Function(BluetoothDevice) listenDatas;
+  const SelectBondedDevicePage({this.checkAvailability = true, required this.listenDatas});
 
   @override
   _SelectBondedDevicePage createState() => new _SelectBondedDevicePage();
@@ -116,13 +116,15 @@ class _SelectBondedDevicePage extends State<SelectBondedDevicePage> {
               rssi: _device.rssi,
               enabled: _device.availability == _DeviceAvailability.yes,
               onTap: () {
-                  Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (context) {
-          return ChatPage(server: _device.device);
-        },
-      ),
-    );
+    //               Navigator.of(context).push(
+    //   MaterialPageRoute(
+    //     builder: (context) {
+    //       return ChatPage(server: _device.device);
+    //     },
+    //   ),
+    // );
+              widget.listenDatas(_device.device);
+
               },
             ))
         .toList();
