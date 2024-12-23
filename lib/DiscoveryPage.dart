@@ -85,7 +85,7 @@ class _DiscoveryPage extends State<DiscoveryPage> {
                   child: Container(
                     margin: new EdgeInsets.all(16.0),
                     child: CircularProgressIndicator(
-                      valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                      valueColor: AlwaysStoppedAnimation<Color>(Colors.blue),
                     ),
                   ),
                 )

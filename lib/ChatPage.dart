@@ -4,6 +4,8 @@ import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bluetooth_serial/flutter_bluetooth_serial.dart';
+import 'package:lottie/lottie.dart';
+import 'package:waterapp/widgets/roundcard.dart';
 
 class ChatPage extends StatefulWidget {
   final BluetoothDevice server;
@@ -25,7 +27,7 @@ class _ChatPage extends State<ChatPage> {
   static final clientID = 0;
   BluetoothConnection? connection;
 
-  List<_Message> messages = List<_Message>.empty(growable: true);
+  List<_Message> messages = [];
   String _messageBuffer = '';
 
   final TextEditingController textEditingController =
@@ -50,12 +52,7 @@ class _ChatPage extends State<ChatPage> {
       });
 
       connection!.input!.listen(_onDataReceived).onDone(() {
-        // Example: Detect which side closed the connection
-        // There should be `isDisconnecting` flag to show are we are (locally)
-        // in middle of disconnecting process, should be set before calling
-        // `dispose`, `finish` or `close`, which all causes to disconnect.
-        // If we except the disconnection, `onDone` should be fired as result.
-        // If we didn't except this (no flag set), it means closing by remote.
+
         if (isDisconnecting) {
           print('Disconnecting locally!');
         } else {
@@ -66,8 +63,20 @@ class _ChatPage extends State<ChatPage> {
         }
       });
     }).catchError((error) {
+            setState(() {
+        isConnecting = false;
+        isDisconnecting = false;
+      });
+
       print('Cannot connect, exception occured');
       print(error);
+    }).timeout(Duration(seconds: 15,),onTimeout: (){
+            setState(() {
+        isConnecting = false;
+        isDisconnecting = false;
+           print('Disconnecter : Timeout');
+      });
+
     });
   }
 
@@ -111,21 +120,33 @@ class _ChatPage extends State<ChatPage> {
 
     final serverName = widget.server.name ?? "Unknown";
     return Scaffold(
-      appBar: AppBar(
+      appBar:isConnected?null: AppBar(
           title: (isConnecting
-              ? Text('Connecting chat to ' + serverName + '...')
+              ? Text('Connecting to $serverName...')
               : isConnected
-                  ? Text('Live chat with ' + serverName)
-                  : Text('Chat log with ' + serverName))),
+                  ? Text('Connected to $serverName')
+                  : Text('Disconnected: $serverName'))),
       body: SafeArea(
-        child: Column(
+        child:isConnecting?Center(
+          child: RoundCard(
+             child: SizedBox(
+                  height: 300,
+                  width: 300,
+                  child: Lottie.asset('assets/bluetoothloading.json',fit: BoxFit.contain))),
+        ) :isConnected?Column(
           children: <Widget>[
-            Flexible(
-              child: ListView(
-                  padding: const EdgeInsets.all(12.0),
-                  controller: listScrollController,
-                  children: list),
-            ),
+       Expanded(
+         child: Center(
+           child: SizedBox(
+            height: 400,
+            width: 300,
+             child: RoundCard(
+              isGradient: true,
+              child: Center(child: messages.isEmpty?const Text("No Records") : Text(messages.last.text),),
+             ),
+           ),
+         ),
+       ),
             Row(
               children: <Widget>[
                 Flexible(
@@ -139,7 +160,7 @@ class _ChatPage extends State<ChatPage> {
                             ? 'Wait until connected...'
                             : isConnected
                                 ? 'Type your message...'
-                                : 'Chat got disconnected',
+                                : 'disconnected',
                         hintStyle: const TextStyle(color: Colors.grey),
                       ),
                       enabled: isConnected,
@@ -157,6 +178,13 @@ class _ChatPage extends State<ChatPage> {
               ],
             )
           ],
+        ):Center(
+          child: SizedBox(
+            height: 400,
+            width: 400,
+            child: RoundCard(
+              isGradient: true,
+              child: Center(child: Text("Disconnected"))),),
         ),
       ),
     );
@@ -220,16 +248,16 @@ class _ChatPage extends State<ChatPage> {
         connection!.output.add(Uint8List.fromList(utf8.encode(text + "\r\n")));
         await connection!.output.allSent;
 
-        setState(() {
-          messages.add(_Message(clientID, text));
-        });
+        // setState(() {
+        //   messages.add(_Message(clientID, text));
+        // });
 
-        Future.delayed(Duration(milliseconds: 333)).then((_) {
-          listScrollController.animateTo(
-              listScrollController.position.maxScrollExtent,
-              duration: Duration(milliseconds: 333),
-              curve: Curves.easeOut);
-        });
+        // Future.delayed(Duration(milliseconds: 333)).then((_) {
+        //   listScrollController.animateTo(
+        //       listScrollController.position.maxScrollExtent,
+        //       duration: Duration(milliseconds: 333),
+        //       curve: Curves.easeOut);
+        // });
       } catch (e) {
         // Ignore error, but notify state
         setState(() {});
