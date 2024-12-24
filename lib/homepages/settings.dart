@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bluetooth_serial/flutter_bluetooth_serial.dart';
 
 import '../DiscoveryPage.dart';
-import '../SelectBondedDevicePage.dart';
 
 class SettingsPage extends StatefulWidget {
   const SettingsPage({super.key, required this.bluetoothState, required this.name, required this.address, required this.discoverableTimeoutSecondsLeft, required this.discoverableTimeoutTimer, required this.changePair, required this.autoAcceptPairingRequests});
@@ -23,13 +22,16 @@ class _SettingsPageState extends State<SettingsPage> {
   @override
   Widget build(BuildContext context) {
     return Container(
+      color: Colors.white,
             child: ListView(
               children: <Widget>[
-                const Divider(),
+             
                 const ListTile(title: Text('General')),
                 SwitchListTile(
                   title: const Text('Enable Bluetooth'),
                   value: widget.bluetoothState.isEnabled,
+                  activeColor: Theme.of(context).colorScheme.secondary,
+                  inactiveTrackColor: Colors.grey,
                   onChanged: (bool value) {
                     // Do the request and update with the true value then
                     future() async {
@@ -40,7 +42,6 @@ class _SettingsPageState extends State<SettingsPage> {
                         await FlutterBluetoothSerial.instance.requestDisable();
                       }
                     }
-        
                     future().then((_) {
                       setState(() {});
                     });
@@ -65,69 +66,71 @@ class _SettingsPageState extends State<SettingsPage> {
                   subtitle: Text(widget.name),
                   onLongPress: null,
                 ),
-                ListTile(
-                  title: widget.discoverableTimeoutSecondsLeft == 0
-                      ? const Text("Discoverable")
-                      : Text(
-                          "Discoverable for ${widget.discoverableTimeoutSecondsLeft}s"),
-                  subtitle: const Text("PsychoX-Luna"),
-                  trailing: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Checkbox(
-                        value: widget.discoverableTimeoutSecondsLeft != 0,
-                        onChanged: null,
-                      ),
-                      const IconButton(
-                        icon: Icon(Icons.edit),
-                        onPressed: null,
-                      ),
-                      // IconButton(
-                      //   icon: const Icon(Icons.refresh),
-                      //   onPressed: () async {
-                      //     print('Discoverable requested');
-                      //     final int timeout = (await FlutterBluetoothSerial.instance
-                      //         .requestDiscoverable(60))!;
-                      //     if (timeout < 0) {
-                      //       print('Discoverable mode denied');
-                      //     } else {
-                      //       print(
-                      //           'Discoverable mode acquired for $timeout seconds');
-                      //     }
-                      //     setState(() {
-                      //       widget.discoverableTimeoutTimer?.cancel();
-                      //       widget.discoverableTimeoutSecondsLeft = timeout;
-                      //       _discoverableTimeoutTimer =
-                      //           Timer.periodic(const Duration(seconds: 1), (Timer timer) {
-                      //         setState(() {
-                      //           if (_discoverableTimeoutSecondsLeft < 0) {
-                      //             FlutterBluetoothSerial.instance.isDiscoverable
-                      //                 .then((isDiscoverable) {
-                      //               if (isDiscoverable ?? false) {
-                      //                 print(
-                      //                     "Discoverable after timeout... might be infinity timeout :F");
-                      //                 _discoverableTimeoutSecondsLeft += 1;
-                      //               }
-                      //             });
-                      //             timer.cancel();
-                      //             _discoverableTimeoutSecondsLeft = 0;
-                      //           } else {
-                      //             _discoverableTimeoutSecondsLeft -= 1;
-                      //           }
-                      //         });
-                      //       });
-                      //     });
-                      //   },
-                      // )
-                    ],
-                  ),
-                ),
+                // ListTile(
+                //   title: widget.discoverableTimeoutSecondsLeft == 0
+                //       ? const Text("Discoverable")
+                //       : Text(
+                //           "Discoverable for ${widget.discoverableTimeoutSecondsLeft}s"),
+                //   subtitle: const Text("PsychoX-Luna"),
+                //   trailing: Row(
+                //     mainAxisSize: MainAxisSize.min,
+                //     children: [
+                //       Checkbox(
+                //         value: widget.discoverableTimeoutSecondsLeft != 0,
+                //         onChanged: null,
+                //       ),
+                //       const IconButton(
+                //         icon: Icon(Icons.edit),
+                //         onPressed: null,
+                //       ),
+                //       // IconButton(
+                //       //   icon: const Icon(Icons.refresh),
+                //       //   onPressed: () async {
+                //       //     print('Discoverable requested');
+                //       //     final int timeout = (await FlutterBluetoothSerial.instance
+                //       //         .requestDiscoverable(60))!;
+                //       //     if (timeout < 0) {
+                //       //       print('Discoverable mode denied');
+                //       //     } else {
+                //       //       print(
+                //       //           'Discoverable mode acquired for $timeout seconds');
+                //       //     }
+                //       //     setState(() {
+                //       //       widget.discoverableTimeoutTimer?.cancel();
+                //       //       widget.discoverableTimeoutSecondsLeft = timeout;
+                //       //       _discoverableTimeoutTimer =
+                //       //           Timer.periodic(const Duration(seconds: 1), (Timer timer) {
+                //       //         setState(() {
+                //       //           if (_discoverableTimeoutSecondsLeft < 0) {
+                //       //             FlutterBluetoothSerial.instance.isDiscoverable
+                //       //                 .then((isDiscoverable) {
+                //       //               if (isDiscoverable ?? false) {
+                //       //                 print(
+                //       //                     "Discoverable after timeout... might be infinity timeout :F");
+                //       //                 _discoverableTimeoutSecondsLeft += 1;
+                //       //               }
+                //       //             });
+                //       //             timer.cancel();
+                //       //             _discoverableTimeoutSecondsLeft = 0;
+                //       //           } else {
+                //       //             _discoverableTimeoutSecondsLeft -= 1;
+                //       //           }
+                //       //         });
+                //       //       });
+                //       //     });
+                //       //   },
+                //       // )
+                //     ],
+                //   ),
+                // ),
                 const Divider(),
                 const ListTile(title: Text('Devices discovery and connection')),
                 SwitchListTile(
                   title: const Text('Auto-try specific pin when pairing'),
                   subtitle: const Text('Pin 1234'),
                   value: widget.autoAcceptPairingRequests,
+                   activeColor: Theme.of(context).colorScheme.secondary,
+                  inactiveTrackColor: Colors.grey,
                   onChanged: (bool value) {
                     widget.changePair(value);
                     if (value) {

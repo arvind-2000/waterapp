@@ -10,19 +10,16 @@ class ConnectingPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Center(
-          child: RoundCard(
-            isGradient: true,
-            
-             child: SizedBox(
-                  height: 300,
-                  width: 300,
-                  child: Column(
-                    children: [
-                      Text("Connecting to : ${device?.name??""}"),
-                      SizedBox(height: 20,),
-                      Lottie.asset('assets/bluetoothloading.json',fit: BoxFit.contain),
-                    ],
-                  ))),
+          child: SizedBox(
+               height: 500,
+               width: 500,
+               child: Column(
+                 children: [
+                   Text("Connecting: ${device?.name??""}",style: TextStyle(color: Colors.white,fontSize: 20),),
+                   SizedBox(height: 20,),
+                   Lottie.asset('assets/bluetoothloading.json',width: 300,height: 300,fit: BoxFit.contain),
+                 ],
+               )),
         );
   }
 }

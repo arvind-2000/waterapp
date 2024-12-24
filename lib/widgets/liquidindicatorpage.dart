@@ -13,7 +13,7 @@ class WaterIndicatorPage extends StatelessWidget {
             Positioned.fill(
               child: LiquidCircularProgressIndicator(
                 
-                value:value,
+                value:value<=0?0:value>100?1:value*0.01,
                 valueColor:AlwaysStoppedAnimation(Colors.blue[500]!),
                 backgroundColor: Colors.blue[100],
               
@@ -30,7 +30,7 @@ class WaterIndicatorPage extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Container(width: 3,
-                  margin: EdgeInsets.only(left: 32),
+                  margin: const EdgeInsets.only(left: 32),
                              height: double.infinity,
                   color: Colors.white.withOpacity(0.5),
                   ),
@@ -42,29 +42,29 @@ class WaterIndicatorPage extends StatelessWidget {
                         Row(
                           children: [
                             Container(width: 5,height: 0.5,color: Colors.white,),
-                            SizedBox(width: 10,),
-                            Text("100"),
+                            const SizedBox(width: 10,),
+                            const Text("100"),
                           ],
                         ),
                         SizedBox(height: s.maxHeight/20,),
-                        Text("80"),
+                        const Text("80"),
                            SizedBox(height: s.maxHeight/20,),
-                        Text("60"),
+                        const Text("60"),
                            SizedBox(height: s.maxHeight/10,),
-                        Text("50"),
+                        const Text("50"),
                            SizedBox(height: s.maxHeight/10,),
-                        Text("40"),
+                        const Text("40"),
                            SizedBox(height: s.maxHeight/20,),
                        
-                        Text("20"),
+                        const Text("20"),
                            SizedBox(height: s.maxHeight/20,),
-                        Text("0"),
+                        const Text("0"),
                      
                       ],
                     ),
                   )
                 ],
-              )):SizedBox(),
+              )):const SizedBox(),
         
                Positioned(
               top: 0,
@@ -72,7 +72,7 @@ class WaterIndicatorPage extends StatelessWidget {
               left: 0,
               right: 0,
               child: Center(
-              child: Text("$value ft",style: TextStyle(color: Colors.white,fontSize: 40),
+              child: Text("$value cm",style: const TextStyle(color: Colors.white,fontSize: 40),
               ),
             ))
         

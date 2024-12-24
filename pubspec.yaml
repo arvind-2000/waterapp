@@ -19,7 +19,7 @@ dependencies:
   flutter_bluetooth_serial:
      git:
       url: https://github.com/arvind-2000/flutter_bluetooth_serial.git
-      ref: 6ceb9cc6db7165633e8947b63ba6b9202e77482e
+      ref: 7f66073872f609056666615c1db3b06e34fb8b6c
 
   permission_handler: ^11.3.1
   scoped_model: ^2.0.0

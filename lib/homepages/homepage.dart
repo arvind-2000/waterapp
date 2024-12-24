@@ -5,11 +5,15 @@ import 'package:waterapp/widgets/liquidindicatorpage.dart';
 import '../widgets/roundcard.dart';
 
 class HomePage extends StatelessWidget {
-  const HomePage({super.key, required this.isConnected, this.device});
+  const HomePage({super.key, required this.isConnected, this.device, required this.sendMessage, this.value, required this.sendMessageController});
   final bool isConnected;
   final BluetoothDevice? device;
+  final Function(String) sendMessage;
+  final String? value;  
+  final TextEditingController sendMessageController;
   @override
   Widget build(BuildContext context) {
+
     return Scaffold(
       body: Container(
         height: MediaQuery.sizeOf(context).height,
@@ -27,31 +31,13 @@ class HomePage extends StatelessWidget {
           child: SingleChildScrollView(
             child: Column(
               children: [
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal:  16.0,vertical: 8),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Row(
-                        children: [
-                          IconButton.filled(onPressed: (){}, icon: const Icon(Icons.person),
-                          
-                          ),
-                          
-                          const SizedBox(width: 20,),
-                          Text("Water Sense",style: Theme.of(context).textTheme.headlineMedium,),
-                        ],
-                      ),
-                      IconButton(onPressed: (){}, icon: const Icon(Icons.settings,color: Colors.white,))
-                            
-                  ],),
-                ),
-                Card(
+                       
+                // Card(
                   
-                  child:Padding(
-                    padding: const EdgeInsets.all(16.0),
-                    child: isConnected? Text("Connected: ${device?.name??""}",):Text("Disconnected :${device?.name??""}"),
-                  )),
+                //   child:Padding(
+                //     padding: const EdgeInsets.all(16.0),
+                //     child: isConnected? Text("Connected: ${device?.name??""}",):Text("Disconnected :${device?.name??""}"),
+                //   )),
                 SizedBox(height: 100,),
                 Center(child: ConstrainedBox(
                   constraints: const BoxConstraints(
@@ -85,30 +71,51 @@ class HomePage extends StatelessWidget {
                        ]
                      ),
                       
-                      child: const WaterIndicatorPage(value: 0.5,)),
+                      child:  WaterIndicatorPage(value: double.tryParse(value??"0")??0,)),
                   ),
                 )),
                   
-                RoundCard(child: ListTile(
+                const RoundCard(child: ListTile(
                   leading: Icon(Icons.line_axis),
                     title: Text("Water Level",style: TextStyle(fontSize: 24,fontWeight: FontWeight.bold),),
                     subtitle: Text("Normal"),
                 ),),
-
+                    RoundCard(child: ListTile(
+              
+                    title: Text("Send Values",style: TextStyle(fontSize:16,fontWeight: FontWeight.bold),),
+                    subtitle: Row(
+                      children: [
+                        Expanded(
+                          child: TextFormField(
+                            decoration: InputDecoration(
+                              
+                              hintText: "Type Here",
+                              hintStyle: TextStyle(color: Colors.grey[600])
+                            ),
+                            onFieldSubmitted: (v){
+                                 if(v.isNotEmpty){
+                            sendMessage(v);
+                          }else{
+                            ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("No Values ")));
+                          }
+                            },
+                            controller: sendMessageController,
                           
-                RoundCard(
-                  sidecolor: Colors.yellow,
-                  child: ListTile(
-                  leading: Icon(Icons.line_axis),
-                    title: Text("Hourly",style: TextStyle(fontSize: 24,fontWeight: FontWeight.bold),),
-                    subtitle: SizedBox(height: 300,),
+                          ),
+                        
+                        ),
+                        IconButton.outlined(onPressed: (){
+                          if(sendMessageController.text.isNotEmpty){
+                            sendMessage(sendMessageController.text);
+                          }else{
+                            ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("No Values ")));
+                          }
+                        }, icon: Icon(Icons.send))
+                      ],
+                    ),
                 ),),
                           
-                RoundCard(child: ListTile(
-                  leading: Icon(Icons.line_axis),
-                    title: Text("Daily",style: TextStyle(fontSize: 24,fontWeight: FontWeight.bold),),
-                     subtitle: SizedBox(height: 300,),
-                ),)
+                   
               ],
             ),
           ),

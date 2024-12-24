@@ -82,8 +82,8 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: "6ceb9cc6db7165633e8947b63ba6b9202e77482e"
-      resolved-ref: "6ceb9cc6db7165633e8947b63ba6b9202e77482e"
+      ref: "7f66073872f609056666615c1db3b06e34fb8b6c"
+      resolved-ref: "7f66073872f609056666615c1db3b06e34fb8b6c"
       url: "https://github.com/arvind-2000/flutter_bluetooth_serial.git"
     source: git
     version: "0.4.0"

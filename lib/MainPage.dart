@@ -5,11 +5,14 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter_bluetooth_serial/flutter_bluetooth_serial.dart';
 import 'package:waterapp/SelectBondedDevicePage.dart';
+import 'package:waterapp/homepages/bluetoothconnectpage.dart';
+import 'package:waterapp/homepages/disconnectedPage.dart';
 import 'package:waterapp/homepages/homepage.dart';
 import 'package:waterapp/homepages/settings.dart';
 import 'package:waterapp/widgets/connectingpage.dart';
 import './BackgroundCollectingTask.dart';
 import './ChatPage.dart';
+import 'widgets/roundcard.dart';
 
 // import './helpers/LineChart.dart';
 
@@ -17,12 +20,14 @@ class MainPage extends StatefulWidget {
   @override
   _MainPage createState() => new _MainPage();
 }
+
 class _Message {
   int whom;
   String text;
 
   _Message(this.whom, this.text);
 }
+
 class _MainPage extends State<MainPage> {
   BluetoothState _bluetoothState = BluetoothState.UNKNOWN;
 
@@ -36,23 +41,19 @@ class _MainPage extends State<MainPage> {
 
   bool _autoAcceptPairingRequests = false;
 
-
   static final clientID = 0;
   BluetoothConnection? connection;
 
   List<_Message> messages = [];
   String _messageBuffer = '';
 
-  final TextEditingController textEditingController =
-      new TextEditingController();
-  final ScrollController listScrollController = new ScrollController();
-
+  final TextEditingController textEditingController = TextEditingController();
   bool isConnecting = false;
   bool get isConnected => (connection?.isConnected ?? false);
 
   bool isDisconnecting = false;
   BluetoothDevice? device;
-
+  final GlobalKey<ScaffoldState> _key = GlobalKey();
   @override
   void initState() {
     super.initState();
@@ -98,33 +99,39 @@ class _MainPage extends State<MainPage> {
       });
     });
   }
-  void changePair(bool value){
+
+  void changePair(bool value) {
     setState(() {
       _autoAcceptPairingRequests = value;
     });
   }
+
   int index = 0;
-  void changeIndex(int ins){
+  void changeIndex(int ins) {
+    if (_key.currentState!.hasDrawer && _key.currentState!.isDrawerOpen) {
+      _key.currentState!.closeDrawer();
+    }
     setState(() {
       index = ins;
     });
   }
+
   @override
   void dispose() {
+    textEditingController.dispose();
     FlutterBluetoothSerial.instance.setPairingRequestHandler(null);
     _collectingTask?.dispose();
     _discoverableTimeoutTimer?.cancel();
+    connection = null;
     super.dispose();
   }
 
-
-
-void connectDevice(BluetoothDevice device){
-      setState(() {
-        isConnecting = true;
-        this.device  = device;
-      });
-      BluetoothConnection.toAddress(device.address).then((connections) {
+  void connectDevice(BluetoothDevice device) {
+    setState(() {
+      isConnecting = true;
+      this.device = device;
+    });
+    BluetoothConnection.toAddress(device.address).then((connections) {
       print('Connected to the device');
       connection = connections;
       setState(() {
@@ -133,7 +140,6 @@ void connectDevice(BluetoothDevice device){
       });
 
       connection!.input!.listen(_onDataReceived).onDone(() {
-
         if (isDisconnecting) {
           print('Disconnecting locally!');
         } else {
@@ -144,23 +150,29 @@ void connectDevice(BluetoothDevice device){
         }
       });
     }).catchError((error) {
-            setState(() {
+      setState(() {
         isConnecting = false;
         isDisconnecting = false;
       });
-
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          backgroundColor: Theme.of(context).colorScheme.secondary,
+          content: const Text(
+            "Failed to Connect",
+            style: TextStyle(color: Colors.white),
+          )));
       print('Cannot connect, exception occured');
       print(error);
-    }).timeout(Duration(seconds: 15,),onTimeout: (){
-            setState(() {
+    }).timeout(
+        const Duration(
+          seconds: 15,
+        ), onTimeout: () {
+      setState(() {
         isConnecting = false;
         isDisconnecting = false;
-           print('Disconnecter : Timeout');
+        print('Disconnecter : Timeout');
       });
-
     });
-}
-
+  }
 
   void _onDataReceived(Uint8List data) {
     // Allocate buffer for parsed data
@@ -232,44 +244,280 @@ void connectDevice(BluetoothDevice device){
         // });
       } catch (e) {
         // Ignore error, but notify state
-        setState(() {});
+        setState(() {
+          ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text("Failed to send message")));
+        });
       }
     }
   }
 
-
-
-
-
   @override
   Widget build(BuildContext context) {
+    return Scaffold(
+        key: _key,
+        drawer: Drawer(
+          backgroundColor: Colors.white,
+          child: Container(
+            decoration: BoxDecoration(
+                gradient: LinearGradient(
+                    colors: [Colors.blue[300]!, Colors.blue[900]!],
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter)),
+            child: SafeArea(
+              child: Column(
+                children: [
+                  SizedBox(
+                      height: 200,
+                      child: Padding(
+                        padding: const EdgeInsets.all(16.0),
+                        child: Row(
+                          children: [
+                            SizedBox(
+                              height: 50,
+                              width: 50,
+                              child: Image.asset("assets/logosplash.png"),
+                            ),
+                            const SizedBox(
+                              width: 10,
+                            ),
+                            Text(
+                              "Water Sense",
+                              style: Theme.of(context).textTheme.headlineMedium,
+                            )
+                          ],
+                        ),
+                      )),
+                  Expanded(
+                    child: Column(
+                      children: [
+                        RoundCard(
+                          margin:
+                              EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+                          padding: EdgeInsets.zero,
+                          isGradient: true,
+                          sidecolor: index == 0 ? Colors.white : null,
+                          // color: index==0?Colors.red:null,
+                          child: ListTile(
+                            onTap: () {
+                              changeIndex(0);
+                            },
+                            leading: Icon(
+                              Icons.home_filled,
+                              color: index == 0 ? Colors.blue : null,
+                            ),
+                            title: Text(
+                              "Home",
+                              style: TextStyle(
+                                color: index == 0 ? Colors.blue : null,
+                              ),
+                            ),
+                          ),
+                        ),
+                        RoundCard(
+                          margin:
+                              EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+                          padding: EdgeInsets.zero,
+                          isGradient: true,
+                          sidecolor: index == 1 ? Colors.white : null,
+                          // color: index==0?Colors.red:null,
+                          child: ListTile(
+                            onTap: () {
+                              changeIndex(1);
+                            },
+                            leading: Icon(
+                              Icons.devices_fold,
+                              color: index == 1 ? Colors.blue : null,
+                            ),
+                            title: Text(
+                              "Devices",
+                              style: TextStyle(
+                                color: index == 1 ? Colors.blue : null,
+                              ),
+                            ),
+                          ),
+                        ),
+                        RoundCard(
+                          margin:
+                              EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+                          padding: EdgeInsets.zero,
+                          isGradient: true,
+                          sidecolor: index == 2 ? Colors.white : null,
+                          // color: index==0?Colors.red:null,
+                          child: ListTile(
+                            onTap: () {
+                              changeIndex(2);
+                            },
+                            leading: Icon(
+                              Icons.settings,
+                              color: index == 2 ? Colors.blue : null,
+                            ),
+                            title: Text(
+                              "Settings",
+                              style: TextStyle(
+                                color: index == 2 ? Colors.blue : null,
+                              ),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(
+                          height: 40,
+                        ),
+                        RoundCard(
+                          margin:
+                              EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+                          padding: EdgeInsets.zero,
+                          isGradient: true,
 
-        return Scaffold(
-          // appBar: AppBar(
-          //   title: const Text('Flutter Bluetooth Serial'),
-          // ),
-          bottomNavigationBar: BottomNavigationBar(
-            elevation: 0,
-           backgroundColor: const Color.fromARGB(255, 2, 44, 105),
-           selectedItemColor: Colors.white,
-           unselectedItemColor: Colors.white60,
-            currentIndex: index,
-            onTap: (v){
-              changeIndex(v);
-            },
-            items:  const [
-            BottomNavigationBarItem(
-          
-              icon: Icon(Icons.home),label: "Home"),
-            BottomNavigationBarItem(icon: Icon(Icons.list),label: "Devices"),
-            BottomNavigationBarItem(icon: Icon(Icons.settings),label: "Settings"),
-          ]),
-          body:index==0?isConnecting?const ConnectingPage():HomePage(isConnected:isConnected,device: device,) :index==1? SelectBondedDevicePage(checkAvailability: false,listenDatas: (dev){
-   
-            changeIndex(0);
-          },):SettingsPage(bluetoothState:_bluetoothState, name: _name, address: _address, discoverableTimeoutSecondsLeft: _discoverableTimeoutSecondsLeft, discoverableTimeoutTimer: _discoverableTimeoutTimer, changePair: changePair, autoAcceptPairingRequests: _autoAcceptPairingRequests)
-        );
-  
+                          // color: index==0?Colors.red:null,
+                          child: ListTile(
+                            onTap: () {},
+                            leading: Icon(Icons.android),
+                            title: Text("App Version"),
+                            subtitle: const Text("1.0.0"),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const Text(
+                    "W  A  T  E  R    S  E  N  S  E",
+                    style: TextStyle(color: Colors.white),
+                  ),
+                  const SizedBox(
+                    height: 30,
+                  )
+                ],
+              ),
+            ),
+          ),
+        ),
+        // bottomNavigationBar: _bluetoothState.isEnabled
+        //     ? BottomNavigationBar(
+        //         elevation: 0,
+        //         backgroundColor: const Color.fromARGB(255, 2, 44, 105),
+        //         selectedItemColor: Colors.white,
+        //         unselectedItemColor: Colors.white60,
+        //         currentIndex: index,
+        //         onTap: (v) {
+        //           changeIndex(v);
+        //         },
+        //         items: const [
+        //             BottomNavigationBarItem(
+        //                 icon: Icon(Icons.home), label: "Home"),
+        //             BottomNavigationBarItem(
+        //                 icon: Icon(Icons.list), label: "Devices"),
+
+        //           ])
+        //     : null,
+        body: Container(
+          height: MediaQuery.sizeOf(context).height,
+          decoration: BoxDecoration(
+              gradient: LinearGradient(colors: [
+            Colors.blue[800]!,
+            Colors.blue[300]!,
+            Colors.blue[900]!
+          ], begin: Alignment.topCenter, end: Alignment.bottomCenter)),
+          child: SafeArea(
+            child: Column(
+              children: [
+                Padding(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Row(
+                        children: [
+                          InkWell(
+                            onTap: () {
+                              if (_key.currentState!.hasDrawer &&
+                                  _key.currentState!.isDrawerOpen) {
+                                _key.currentState!.closeDrawer();
+                              } else {
+                                _key.currentState!.openDrawer();
+                              }
+                            },
+                            child: SizedBox(
+                              height: 30,
+                              width: 30,
+                              child: Image.asset("assets/logosplash.png"),
+                            ),
+                          ),
+                          const SizedBox(
+                            width: 20,
+                          ),
+                          const Text(
+                            "Water Sense",
+                            style: TextStyle(color: Colors.white, fontSize: 24),
+                          ),
+                        ],
+                      ),
+                      IconButton(
+                          onPressed: () {
+                            changeIndex(2);
+                          },
+                          icon: const Icon(
+                            Icons.settings,
+                            color: Colors.white,
+                          ))
+                    ],
+                  ),
+                ),
+                Expanded(
+                  child: !_bluetoothState.isEnabled
+                      ? BluetoothConnectPage(
+                          bluetoothState: _bluetoothState,
+                          changePair: changePair)
+                      : index == 0
+                          ? isConnecting
+                              ? ConnectingPage(
+                                  device: device,
+                                )
+                              : isConnected &&
+                                      connection != null &&
+                                      connection!.isConnected
+                                  ? HomePage(
+                                      sendMessageController:
+                                          textEditingController,
+                                      value: messages.last.text,
+                                      isConnected: isConnected,
+                                      device: device,
+                                      sendMessage: (v) {
+                                        _sendMessage(v);
+                                        ScaffoldMessenger.of(context)
+                                            .showSnackBar(const SnackBar(
+                                                content: Text("Message Sent")));
+                                      })
+                                  : DisconnectedPage(
+                                      isConnected: isConnected,
+                                      onConnect: () {
+                                        changeIndex(1);
+                                      })
+                          : index == 1
+                              ? SelectBondedDevicePage(
+                                  checkAvailability: false,
+                                  listenDatas: (dev) {
+                                    connectDevice(dev);
+                                    changeIndex(0);
+                                  },
+                                )
+                              : SettingsPage(
+                                  bluetoothState: _bluetoothState,
+                                  name: _name,
+                                  address: _address,
+                                  discoverableTimeoutSecondsLeft:
+                                      _discoverableTimeoutSecondsLeft,
+                                  discoverableTimeoutTimer:
+                                      _discoverableTimeoutTimer,
+                                  changePair: changePair,
+                                  autoAcceptPairingRequests:
+                                      _autoAcceptPairingRequests),
+                ),
+              ],
+            ),
+          ),
+        ));
   }
 
   void _startChat(BuildContext context, BluetoothDevice server) {
