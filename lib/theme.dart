@@ -10,6 +10,9 @@ final ThemeData darkTheme = ThemeData(
     toolbarHeight: 80,   
     iconTheme: IconThemeData(color: Colors.blue),
   ),
+  snackBarTheme: SnackBarThemeData(
+    contentTextStyle: TextStyle(color: Colors.white)
+  ),
   scaffoldBackgroundColor: Colors.white,
   colorScheme: ColorScheme(
     error: Colors.red,
